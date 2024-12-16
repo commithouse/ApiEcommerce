@@ -57,7 +57,7 @@ paths:
       description: ''
       operationId: getcustomerByName
       parameters:
-        - name: customerId
+        - name: idCustomer
           in: path
           description: 'The name that needs to be fetched. Use customer1 for testing. '
           required: true
@@ -84,7 +84,7 @@ paths:
       description: This can only be done by the logged in customer.
       operationId: updatecustomer
       parameters:
-        - name: customername
+        - name: idCustomer
           in: path
           description: name that need to be deleted
           required: true
@@ -404,7 +404,7 @@ paths:
       description: delete a product inventory
       operationId: deleteInventory
       parameters:
-        - name: orderId
+        - name: idProduct
           in: path
           description: ID of the order that needs to be deleted
           required: true

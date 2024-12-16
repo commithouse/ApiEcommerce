@@ -1,0 +1,983 @@
+openapi: 3.0.3
+info:
+  title: Swagger E-commerce App Sample - OpenAPI 3.0
+  description: |-
+    This is a sample E-commerce Server based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the E-commerce, we've switched to the design first approach!
+    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+
+    _If you're looking for the Swagger 2.0/OAS 2.0 version of Ecommerce, then click [here](https://editor.swagger.io/?url=https://Ecommerce.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Ecommerce OAS 2.0` menu option!_
+
+  
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://Ecommerce3.swagger.io/api/v3
+tags:
+  - name: customer
+    description: Operations about customer
+  - name: product
+    description: Everything about your products
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: stock
+    description: Access to Ecommerce stock
+    externalDocs:
+      description: Find out more about our stock
+      url: http://swagger.io
+  - name: order
+    description: Access to Ecommerce orders
+    externalDocs:
+      description: Find out more about our stock
+      url: http://swagger.io
+  - name: payment
+    description: Access to Ecommerce orders
+    externalDocs:
+      description: Find out more about our stock
+      url: http://swagger.io      
+  - name: sale
+    description: Access to Ecommerce sales
+    externalDocs:
+      description: Find out more about our sales
+      url: http://swagger.io
+paths:
+  /customer/{idCustomer}:
+    get:
+      tags:
+        - customer
+      summary: Get customer by customer id
+      description: ''
+      operationId: getcustomerByName
+      parameters:
+        - name: customerId
+          in: path
+          description: 'The name that needs to be fetched. Use customer1 for testing. '
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/customer'
+        '400':
+          description: Invalid customername supplied
+        '404':
+          description: customer not found
+    put:
+      tags:
+        - customer
+      summary: Update customer
+      description: This can only be done by the logged in customer.
+      operationId: updatecustomer
+      parameters:
+        - name: customername
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent customer in the stock
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        default:
+          description: successful operation
+    delete:
+      tags:
+        - customer
+      summary: Delete customer
+      description: This can only be done by the logged in customer.
+      operationId: deletecustomer
+      parameters:
+        - name: customername
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid customername supplied
+        '404':
+          description: customer not found
+
+  /product:
+    post:
+      tags:
+        - product
+      summary: Add a new product to the catalog
+      description: Add a new product to the catalog
+      operationId: addproduct
+      requestBody:
+        description: Create a new product in the catalog
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/product'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+  /product/findByStatus:
+    get:
+      tags:
+        - product
+      summary: Finds products by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findproductsByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+              - sold
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid status value
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+  /product/findByRegion:
+    get:
+      tags:
+        - product
+      summary: Finds products by region
+      description: Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+      operationId: findproductsByRegion
+      parameters:
+        - name: region
+          in: query
+          description: Tags to filter by
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid tag value
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+  /product/{productId}:
+    get:
+      tags:
+        - product
+      summary: Find product by ID
+      description: Returns a single product
+      operationId: getproductById
+      parameters:
+        - name: productId
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: product not found
+      security:
+        - api_key: []
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+    put:
+      tags:
+        - product
+      summary: Update an existing product
+      description: Update an existing product by Id
+      operationId: updateproduct
+      requestBody:
+        description: Update an existent product in the stock
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/product'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/product'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: product not found
+        '422':
+          description: Validation exception
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+
+    delete:
+      tags:
+        - product
+      summary: Deletes a product
+      description: delete a product
+      operationId: deleteproduct
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: productId
+          in: path
+          description: product id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid product value
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+  /product/{productId}/uploadImage:
+    post:
+      tags:
+        - product
+      summary: uploads an image
+      description: ''
+      operationId: uploadFile
+      parameters:
+        - name: productId
+          in: path
+          description: ID of product to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: additionalMetadata
+          in: query
+          description: Additional Metadata
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+        - Ecommerce_auth:
+            - write:products
+            - read:products
+  /stock/{idProduct}:
+    get:
+      tags:
+        - stock
+      summary: Returns product inventories by product ID
+      description: Returns a map of status codes to quantities
+      operationId: getInventory
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - stock
+      summary: Deletes a product inventory
+      description: delete a product inventory
+      operationId: deleteInventory
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of the order that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found        
+
+  /stock/add/{idProduct}:
+    post:
+      tags:
+        - stock
+      summary: Add product inventories in the stock
+      description: Add product inventories in the stock
+      operationId: addInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+
+  /stock/transfer/{idProduct}:
+    post:
+      tags:
+        - stock
+      summary: Transfer product inventories between locations
+      description: Transfer product inventories between locations
+      operationId: transferInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transfer'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+
+  /stock/subtract/{idProduct}:
+    post:
+      tags:
+        - stock
+      summary: Subtracts product inventories in the stock
+      description: Subtracts product inventories in the stock
+      operationId: subtractInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  
+  /customer:
+    post:
+      tags:
+        - customer
+      summary: Create customer
+      description: This can only be done by the logged in customer.
+      operationId: createcustomer
+      requestBody:
+        description: Created customer object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customer'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/customer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/customer'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/customer'
+  /customer/createWithList:
+    post:
+      tags:
+        - customer
+      summary: Creates list of customers with given input array
+      description: Creates list of customers with given input array
+      operationId: createcustomersWithListInput
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/customer'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/customer'
+        default:
+          description: successful operation
+
+  /order:
+    post:
+      tags:
+        - order
+      summary: Place an order for a customer
+      description: Place a new order in the store
+      operationId: placeOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  /order/{orderId}:
+    get:
+      tags:
+        - order
+      summary: Find purchase order by ID
+      description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be fetched
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+    delete:
+      tags:
+        - order
+      summary: Delete purchase order by ID
+      description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+      operationId: deleteOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of the order that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+  
+  /customer/{idCustomer}/orders:
+    get:
+      tags:
+        - order
+      summary: Find purchase order by ID
+      description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
+      operationId: getOrdersByCustomerId
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be fetched
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderList'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OrderList'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found          
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        items:
+          type: array
+          xml:
+            name: items
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        quantityTotal:
+          type: integer
+          format: int32
+          example: 7
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+      xml:
+        name: order
+    Transfer:
+      type: object
+      properties:
+        idFrom:
+          type: integer
+          format: int64
+          example: 10
+        idTo:
+          type: integer
+          format: int64
+          example: 10
+        productId:
+          type: integer
+          format: int64
+          example: 198772
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+      xml:
+        name: order
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100000
+        customername:
+          type: string
+          example: fehguy
+        address:
+          type: array
+          xml:
+            name: addresses
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Address'
+      xml:
+        name: customer
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: 437 Lytton
+        city:
+          type: string
+          example: Palo Alto
+        state:
+          type: string
+          example: CA
+        zip:
+          type: string
+          example: '94301'
+        type:
+          type: string
+          example: home
+      xml:
+        name: address
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Higiene
+      xml:
+        name: category
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        productId:
+          type: integer
+          example: 198772
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipDate:
+          type: string
+          format: date-time
+        UnitPrice:
+          type: number
+          format: float
+          example: 10.0
+        TotalPrice:
+          type: number
+          format: float
+          example: 70.0
+        status:
+          type: string
+          description: OrderItem Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+    OrderList:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+
+    customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        customername:
+          type: string
+          example: thecustomer
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        emailLogin:
+          type: string
+          example: john@email.com
+        cpf:
+          type: string
+          example: '123.456.789-00'
+        customerStatus:
+          type: integer
+          description: customer Status
+          format: int32
+          example: 1
+        addresses:
+          type: array
+          xml:
+            name: addresses
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Address'
+        contacts:
+          type: array
+          xml:
+            name: contacts
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Contact'
+      xml:
+        name: customer
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        type:
+          type: string
+          example: mobile home
+      xml:
+        name: contact
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: tag
+    product:
+      required:
+        - name
+        - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: sabonete Dove barra 200g
+        category:
+          $ref: '#/components/schemas/Category'
+        photoUrls:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            type: string
+            xml:
+              name: photoUrl
+        tags:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/Tag'
+        status:
+          type: string
+          description: product status in the stock
+          enum:
+            - available
+            - pending
+            - sold
+      xml:
+        name: product
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  requestBodies:
+    product:
+      description: product object that needs to be added to the stock
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/product'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/product'
+    customerArray:
+      description: List of customer object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/customer'
+  securitySchemes:
+    Ecommerce_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://Ecommerce3.swagger.io/oauth/authorize
+          scopes:
+            write:products: modify products in your account
+            read:products: read your products
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

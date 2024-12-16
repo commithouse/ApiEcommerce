@@ -55,7 +55,7 @@ paths:
         - customer
       summary: Get customer by customer id
       description: ''
-      operationId: getcustomerByName
+      operationId: getCustomerById
       parameters:
         - name: idCustomer
           in: path
@@ -112,7 +112,7 @@ paths:
       description: This can only be done by the logged in customer.
       operationId: deletecustomer
       parameters:
-        - name: customername
+        - name: idCustomer
           in: path
           description: The name that needs to be deleted
           required: true
@@ -279,6 +279,14 @@ paths:
       summary: Update an existing product
       description: Update an existing product by Id
       operationId: updateproduct
+      parameters:
+        - name: productId
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         description: Update an existent product in the stock
         content:
@@ -384,7 +392,15 @@ paths:
         - stock
       summary: Returns product inventories by product ID
       description: Returns a map of status codes to quantities
-      operationId: getInventory
+      operationId: getStock
+      parameters:
+        - name: idProduct
+          in: path
+          description: ID of product to update
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: successful operation
@@ -424,6 +440,14 @@ paths:
       summary: Add product inventories in the stock
       description: Add product inventories in the stock
       operationId: addInventory
+      parameters:
+        - name: idProduct
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64
       requestBody:
         content:
           application/json:
@@ -454,6 +478,14 @@ paths:
       summary: Transfer product inventories between locations
       description: Transfer product inventories between locations
       operationId: transferInventory
+      parameters:
+        - name: idProduct
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64      
       requestBody:
         content:
           application/json:
@@ -478,6 +510,14 @@ paths:
       summary: Subtracts product inventories in the stock
       description: Subtracts product inventories in the stock
       operationId: subtractInventory
+      parameters:
+        - name: idProduct
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: integer
+            format: int64      
       requestBody:
         content:
           application/json:
@@ -643,7 +683,7 @@ paths:
       description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
       operationId: getOrdersByCustomerId
       parameters:
-        - name: orderId
+        - name: idCustomer
           in: path
           description: ID of order that needs to be fetched
           required: true
